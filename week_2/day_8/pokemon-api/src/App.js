@@ -47,7 +47,22 @@ function App() {
 
   return (
     <div className="container-fluid bg-info w-100 vh-100 d-flex flex-column justify-content-center align-items-center">
-      <h1 className="text-center p-4 text-white">Pokemon Stats</h1>
+      <a
+        href="https://www.freepnglogos.com/pics/pokemon-logo-png"
+        title="Image from freepnglogos.com"
+      >
+        <img
+          src="https://www.freepnglogos.com/uploads/pokemon-logo-png-0.png"
+          width="200"
+          alt="Pokemon Logo Png"
+        />
+      </a>
+      <h1
+        className="text-center p-3
+       text-white"
+      >
+        Pokemon Stats
+      </h1>
 
       <form
         className="bg-white rounded p-5 d-flex flex-column align-items-center shadow"
