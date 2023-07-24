@@ -1,75 +1,37 @@
 import "./App.css";
-import { useState, useEffect } from "react";
 
-import { Book } from "./models/book";
+import { useState, useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase/firebase";
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.min.js";
 
-import BookForm from "./components/BookForm";
-import BookTable from "./components/BookTable";
-
-import BookService from "./services/book-service";
+import Navbar from "./components/common/Navbar";
+import BookPage from "./components/book/BookPage";
+import LoginPage from "./components/auth/LoginPage";
+import RegisterPage from "./components/auth/RegisterPage";
 
 function App() {
-  const [books, setBooks] = useState([]);
-  const [bookToEdit, setBookToEdit] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    if (!books.length) {
-      onInitialLoad();
-    }
+    onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
   }, []);
 
-  async function onInitialLoad() {
-    try {
-      const books = await BookService.fetchBook();
-      setBooks(books);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  async function onBookCreated(book) {
-    setBookToEdit(null);
-
-    const createdBook = await BookService.createBook(book);
-
-    setBooks([...books, createdBook]);
-  }
-
-  async function onBookDelete(book) {
-    setBooks(books.filter((x) => x.isbn !== book.isbn));
-    await BookService.deleteBook(book.id);
-  }
-
-  function onBookEdit(book) {
-    setBookToEdit(book);
-  }
-
-  async function onBookUpdate(updatedBook) {
-    const updated = await BookService.updateBook(updatedBook);
-    const updatedBooks = books.map((book) =>
-      book.id === updated.id ? updated : book
-    );
-    setBooks(updatedBooks);
-    setBookToEdit(null);
-  }
-
   return (
-    <div className="m-5">
-      <div className="card p-4">
-        <BookForm
-          onBookCreated={onBookCreated}
-          bookToEdit={bookToEdit}
-          onBookUpdate={onBookUpdate}
-        />
-        <BookTable
-          books={books}
-          onBookDelete={onBookDelete}
-          onBookEdit={onBookEdit}
-        />
-      </div>
-    </div>
+    <BrowserRouter>
+      <Navbar user={user} />
+      <Routes>
+        <Route path="/" element={<BookPage />}></Route>
+        <Route path="/login" element={<LoginPage />}></Route>
+        <Route path="/register" element={<RegisterPage />}></Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
